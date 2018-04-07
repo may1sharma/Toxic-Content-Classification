@@ -131,5 +131,6 @@ def predict_individual_score(comment):
         lr_model = pickle.load(lr_model_pkl)
         print ("Loaded Logistic Regression Model for class %s :: " %classes[i], lr_model)
         prediction[classes[i]] = lr_model.predict_proba(comment_features)[:, 1]
-    print ("Prediction:")
-    print (prediction)
+    # print ("Prediction:")
+    # print (prediction)
+    return prediction

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Toxic Content Filtering</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!--<link rel="stylesheet" href="form.css" >-->
+        <!--<script src="form.js"></script>-->
+    </head>
+    <body >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 " id="form_container">
+                    <p>{{ message }}</p>
+                    <p>{{ predictions }}</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<style>
+#form_container
+{
+	padding:15px 15px;
+	margin-top:15px;
+	background: rgba(0,0,0,0.5);
+	color:#fff;
+}
+body
+{
+	background-color: #000;
+	<!--background-image: url("static/images/toxic1.jpg");-->
+	background-size: cover;
+	background-repeat:no-repeat;
+}
+body::after {
+  content: "";
+  background: url("static/images/toxic1.jpg");
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
+.upload-btn-wrapper
+{
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file]
+{
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+</style>

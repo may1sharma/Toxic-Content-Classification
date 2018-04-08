@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
-from my_features import PoS_TagFeatures, BadWords_Features, ExtractedFeatures
+from my_features import PoS_TagFeatures, BadWords_Features, Symbol_Features, TextFeatures
 from data_process import Data, get_classes
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -41,25 +41,25 @@ def feature_extraction(data, flag):
         ('dictVect', DictVectorizer(sparse=False))
     ])
 
-    # Pipelining Extracted Features with DictVectorizer for processing
-    featureVectorizer = Pipeline([
-        ('extractor', ExtractedFeatures()),
+    # Pipelining Symbol based Features with DictVectorizer for processing
+    symbol_vectorizer = Pipeline([
+        ('symbols', Symbol_Features()),
+        ('dictVect', DictVectorizer(sparse=False))
+    ])
+
+    # Pipelining Text Features with DictVectorizer for processing
+    text_vectorizer = Pipeline([
+        ('texts', TextFeatures()),
         ('dictVect', DictVectorizer(sparse=False))
     ])
 
     print ("Extracting features...")
     combined_features = FeatureUnion(
         [("word", word_vectorizer), ("char", char_vectorizer), ("pos_tags", posTag_vectorizer),
-         ("bad_word", badWord_vectorizer)])
+         ("bad_word", badWord_vectorizer), ("symbol", symbol_vectorizer), ("text", text_vectorizer)])
 
     if(flag == 'train'):
-        features = [0]*6
-        features[0] = combined_features.fit(data.train_text, data.train["toxic"]).transform(data.train_text)
-        features[1] = combined_features.fit(data.train_text, data.train["severe_toxic"]).transform(data.train_text)
-        features[2] = combined_features.fit(data.train_text, data.train["obscene"]).transform(data.train_text)
-        features[3] = combined_features.fit(data.train_text, data.train["threat"]).transform(data.train_text)
-        features[4] = combined_features.fit(data.train_text, data.train["insult"]).transform(data.train_text)
-        features[5] = combined_features.fit(data.train_text, data.train["identity_hate"]).transform(data.train_text)
+        features = combined_features.fit(data.train_text).transform(data.train_text)
         print ("Saving features")
         feature_pkl_filename = '../model/features.pkl'
         feature_pkl = open(feature_pkl_filename, 'wb')
@@ -83,12 +83,12 @@ def create_and_save():
         print ("Processing "+data.classes[i])
         train_target = data.train[data.classes[i]]
         classifier = LogisticRegression(solver='sag')
-        cv_score = np.mean(cross_val_score(classifier, train_features[i], train_target, cv=3, scoring='roc_auc'))
+        cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
         scores.append(cv_score)
         print('CV score for class {} is {}'.format(data.classes[i], cv_score))
 
         print ("Creating model for class "+data.classes[i])
-        classifier.fit(train_features[i], train_target)
+        classifier.fit(train_features, train_target)
 
         print ("Saving model logistic_regression_%s" %data.classes[i])
         lr_pkl_filename = '../model/logistic_regression_%s.pkl' %data.classes[i]

@@ -13,41 +13,69 @@
     </head>
     <body >
         <div class="container">
-            <div class="row">
-                <div class="col-md-12 " id="form_container">
-                    <p>{{ message }}</p>
-                    <p>{{ predictions }}</p>
+            <div class = "row">
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-4" id="form_container" style="justify-content: center;">
+                    <h2>Comment: </h2>
+                    <br>
+                    <h4>{{ message }}</h4>
                 </div>
+                <div class="col-md-4"></div>
+                <!--<div class="col-md-1"></div>-->
+                <div class="col-md-4" id="form_container">
+                    <h2>Predictions: </h2>
+                    <br>
+                    <ul style="list-style-type: none;">
+                        <li>Toxic : {{ "{0:.2f}".format(predictions['toxic'].item()*100) }} %</li>
+                        <br>
+                        <li>Severe Toxic : {{ "{0:.2f}".format(predictions['severe_toxic'].item()*100) }} %</li>
+                        <br>
+                        <li>Obscene : {{ "{0:.2f}".format(predictions['obscene'].item()*100) }} %</li>
+                        <br>
+                        <li>Threat : {{ "{0:.2f}".format(predictions['threat'].item()*100) }} %</li>
+                        <br>
+                        <li>Insult : {{ "{0:.2f}".format(predictions['insult'].item()*100) }} %</li>
+                        <br>
+                        <li>Identity Hate : {{ "{0:.2f}".format(predictions['identity_hate'].item()*100) }} %</li>
+                    </ul>
+                    <br>
+                    <h2>Overall Toxicity : {{ "{0:.2f}".format(predictions.mean(axis=1).item()*100) }} %</h2>
+                </div>
+                <!--<div class="col-md-1"></div>-->
             </div>
         </div>
     </body>
 </html>
 
 <style>
+li{
+    font-size: 20px;
+}
 #form_container
 {
-	padding:15px 15px;
-	margin-top:15px;
+	padding:15px 30px;
+	margin-top:8%;
 	background: rgba(0,0,0,0.5);
-	color:#fff;
+	color:#acc2ca;
 }
 body
 {
-	background-color: #000;
-	<!--background-image: url("static/images/toxic1.jpg");-->
+	background-color: #00000038;
 	background-size: cover;
-	background-repeat:no-repeat;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 }
 body::after {
   content: "";
   background: url("static/images/toxic1.jpg");
-  opacity: 0.5;
+  opacity: 0.4;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   position: absolute;
+  background-position: center;
   z-index: -1;
+  background-size: cover;
 }
 .upload-btn-wrapper
 {

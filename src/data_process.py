@@ -5,8 +5,8 @@ class Data():
     def __init__(self):
         nltk.download('averaged_perceptron_tagger')
         print ("Loading data...")
-        self.train = pd.read_csv('../data/Better_Train.csv').fillna(' ')
-        self.test = pd.read_csv('../data/tiny_test.csv').fillna(' ')
+        self.train = pd.read_csv('../data/Better_Train.csv', encoding="utf-8").fillna(' ')
+        self.test = pd.read_csv('../data/tiny_test.csv', encoding="utf-8").fillna(' ')
         self.train_text = self.train['comment_text']
         self.test_text = self.test['comment_text']
         self.classes = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']

@@ -15,15 +15,17 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 " id="form_container">
-                    <h1>Toxic Content Filtering</h1>
-                    <h4> Please enter your message below... </h4>
+                    <h1>Toxic Comment Classification</h1>
+                    <br>
+                    <br>
                     <form role="form" method="post" id="reused_form" action="/messageprobability">
                         <div class="row">
                             <div class="col-sm-12 form-group">
-                                <label for="message"> Message:</label>
-                                <textarea class="form-control" type="textarea" id="message" name="message" maxlength="6000" rows="7"></textarea>
+                                <label for="message" style="font-size:18px;"> Please enter your comment:</label>
+                                <textarea class="form-control" type="textarea" id="message" name="message" maxlength="6000" rows="7" style="font-size:16px;"></textarea>
                             </div>
                         </div>
+                        <br>
                         <div class="row">
                             <div class="col-sm-12 form-group">
                                 <button type="submit" class="btn btn-lg btn-default pull-right" >Submit &rarr;</button>
@@ -42,16 +44,16 @@
 #form_container
 {
 	padding:15px 15px;
-	margin-top:15px;
+	margin-top:8%;
 	background: rgba(0,0,0,0.5);
 	color:#fff;
 }
 body
 {
-	background-color: #000;
-	<!--background-image: url("static/images/toxic2.jpg");-->
+	background-color: #00000038;
 	background-size: cover;
 	background-repeat:no-repeat;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 }
 body::after {
   content: "";

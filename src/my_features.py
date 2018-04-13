@@ -17,12 +17,12 @@ class PoS_TagFeatures(TransformerMixin):
         text_splited = [''.join(c for c in s if c not in string.punctuation) for s in text_splited]
         text_splited = [s for s in text_splited if s]
         pos_list = pos_tag(text_splited)
-        noun_count = len([w for w in pos_list if w[1] in ('NN', 'NNP', 'NNPS', 'NNS')])
-        adjective_count = len([w for w in pos_list if w[1] in ('JJ', 'JJR', 'JJS')])
-        verb_count = len([w for w in pos_list if w[1] in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ')])
+        noun_count = len([w for w in pos_list if w[1] in ('NN', 'NNP', 'NNPS', 'NNS')]) + 0.01
+        adjective_count = len([w for w in pos_list if w[1] in ('JJ', 'JJR', 'JJS')]) + 0.01
+        verb_count = len([w for w in pos_list if w[1] in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ')]) + 0.01
 
-        words = len(text.split())
-        length = len(text)
+        words = len(text.split()) + 0.01
+        length = len(text) + 0.01
         return [noun_count, noun_count / words, noun_count / length,
                 adjective_count, adjective_count / words, adjective_count / length,
                 verb_count, verb_count / words, verb_count / length]
@@ -45,8 +45,8 @@ class PoS_TagFeatures(TransformerMixin):
 # Bad Words Occurrence Count
 class BadWords_Features(TransformerMixin):
     def badWordCount(self, text):
-        badCount = sum(text.count(w) for w in badwords)
-        return [badCount, badCount / len(text.split()), badCount / len(text)]
+        badCount = sum(text.count(w) for w in badwords) + 0.01
+        return [badCount, badCount / (len(text.split()) + 0.01), badCount / (len(text) + 0.01)]
 
     def fit(self, x, y=None):
         return self
@@ -61,17 +61,17 @@ class BadWords_Features(TransformerMixin):
 # Symbol Occurrence Count
 class Symbol_Features(TransformerMixin):
     def symbolCount(self, text):
-        foul_filler = sum(text.count(w) for w in '*&$%@#!')
-        userMentions = text.count("User:")
-        smileys = sum(text.count(w) for w in (':-)', ':)', ';-)', ';)'))
-        exclamation = text.count("!")
-        question = text.count("User:")
-        punctuation = sum(text.count(w) for w in string.punctuation)
-        all_symbol = sum(text.count(w) for w in unicodedata.normalize('NFKD',u'*&#$%“”¨«»®´·º½¾¿¡§£₤‘’').encode('ascii','ignore'))
+        foul_filler = sum(text.count(w) for w in '*&$%@#!') + 0.01
+        userMentions = text.count("User:") + 0.01
+        smileys = sum(text.count(w) for w in (':-)', ':)', ';-)', ';)')) + 0.01
+        exclamation = text.count("!") + 0.01
+        question = text.count("User:") + 0.01
+        punctuation = sum(text.count(w) for w in string.punctuation) + 0.01
+        all_symbol = sum(text.count(w) for w in unicodedata.normalize('NFKD',u'*&#$%“”¨«»®´·º½¾¿¡§£₤‘’').encode('ascii','ignore')) + 0.01
 
 
-        words = len(text.split())
-        length = len(text)
+        words = len(text.split()) + 0.01
+        length = len(text) + 0.01
         return [foul_filler, foul_filler / words, foul_filler / length,
                 userMentions, userMentions / words, userMentions / length,
                 smileys, smileys / words, smileys / length,
@@ -111,14 +111,14 @@ class Symbol_Features(TransformerMixin):
 # General Text Based Features
 class TextFeatures(TransformerMixin):
     def featureCount(self, text):
-        words = len(text.split())
-        length = len(text)
-        capitals = sum(1 for c in text if c.isupper())
-        paragraphs = text.count('\n')
-        stopwords = sum(text.count(w) for w in eng_stopwords)
-        unique = len(set(w for w in text.split()))
+        words = len(text.split()) + 0.01
+        length = len(text) + 0.01
+        capitals = sum(1 for c in text if c.isupper()) + 0.01
+        paragraphs = text.count('\n') + 0.01
+        stopwords = sum(text.count(w) for w in eng_stopwords) + 0.01
+        unique = len(set(w for w in text.split())) + 0.01
         word_counts = Counter(text.split())
-        repeat = sum(count for word, count in sorted(word_counts.items()) if count > 10)
+        repeat = sum(count for word, count in sorted(word_counts.items()) if count > 10) + 0.01
 
         return [words, length, words / length,
                 capitals, capitals / words, capitals / length,

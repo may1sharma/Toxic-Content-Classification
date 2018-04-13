@@ -10,6 +10,7 @@ from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
+from sklearn.feature_selection import SelectKBest, chi2
 
 def feature_extraction(data, flag):
     # Word Vectorizer
@@ -54,9 +55,14 @@ def feature_extraction(data, flag):
     ])
 
     print ("Extracting features...")
+    # combined_features = FeatureUnion(
+    #     [("word", word_vectorizer), ("char", char_vectorizer), ("pos_tags", posTag_vectorizer),
+    #      ("bad_word", badWord_vectorizer), ("symbol", symbol_vectorizer), ("text", text_vectorizer)])
+
+
     combined_features = FeatureUnion(
-        [("word", word_vectorizer), ("char", char_vectorizer), ("pos_tags", posTag_vectorizer),
-         ("bad_word", badWord_vectorizer), ("symbol", symbol_vectorizer), ("text", text_vectorizer)])
+         [("word", word_vectorizer), ("char", char_vectorizer)])
+
 
     if(flag == 'train'):
         features = combined_features.fit(data.train_text).transform(data.train_text)
@@ -79,16 +85,22 @@ def create_and_save():
     data = Data()
     train_features = feature_extraction(data, "train")
     scores = []
+    # print (train_features.shape)
+    # kbest = SelectKBest(chi2, k=1000)
     for i in range(len(data.classes)):
         print ("Processing "+data.classes[i])
         train_target = data.train[data.classes[i]]
+        # x_feature = kbest.fit_transform(train_features, train_target)
+        # print (x_feature)
         classifier = LogisticRegression(solver='sag')
         cv_score = np.mean(cross_val_score(classifier, train_features, train_target, cv=3, scoring='roc_auc'))
+        # cv_score = np.mean(cross_val_score(classifier, x_feature, train_target, cv=3, scoring='roc_auc'))
         scores.append(cv_score)
         print('CV score for class {} is {}'.format(data.classes[i], cv_score))
 
         print ("Creating model for class "+data.classes[i])
         classifier.fit(train_features, train_target)
+        # classifier.fit(x_feature, train_target)
 
         print ("Saving model logistic_regression_%s" %data.classes[i])
         lr_pkl_filename = '../model/logistic_regression_%s.pkl' %data.classes[i]

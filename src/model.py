@@ -11,6 +11,11 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.metrics import roc_curve, auc
+
+from scipy import interp
+import matplotlib.pyplot as plt
 
 def feature_extraction(data, flag):
     # Word Vectorizer
@@ -98,6 +103,9 @@ def create_and_save():
         scores.append(cv_score)
         print('CV score for class {} is {}'.format(data.classes[i], cv_score))
 
+        # Calculate ROC_AUC
+        roc_auc(train_features, np.array(train_target))
+
         print ("Creating model for class "+data.classes[i])
         classifier.fit(train_features, train_target)
         # classifier.fit(x_feature, train_target)
@@ -146,3 +154,38 @@ def predict_individual_score(comment):
     # print ("Prediction:")
     # print (prediction)
     return prediction
+
+
+def roc_auc(X, Y):
+    classifier = LogisticRegression(solver='sag')
+    cv = StratifiedKFold(Y, n_folds=3)
+    mean_tpr = 0.0
+    mean_fpr = np.linspace(0, 1, 100)
+    all_tpr = []
+    # print(X.shape, Y.shape)
+    for i, (tran, tet) in enumerate(cv):
+        # print(tran, tet)
+        probas_ = classifier.fit(X[tran, :], Y[tran]).predict_proba(X[tet, :])
+        # Compute ROC curve and area the curve
+        fpr, tpr, thresholds = roc_curve(Y[tet], probas_[:, 1])
+        mean_tpr += interp(mean_fpr, fpr, tpr)
+        mean_tpr[0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        # plt.plot(fpr, tpr, lw=1, label='ROC fold %d (area = %0.2f)' % (i, roc_auc))
+
+    plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6))
+
+    mean_tpr /= len(cv)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    plt.plot(mean_fpr, mean_tpr, 'k--', label='Mean ROC (area = %0.2f)' % mean_auc, lw=2)
+
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristics')
+    plt.legend(loc="lower right")
+    plt.show()
+
+

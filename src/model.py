@@ -104,7 +104,7 @@ def create_and_save():
         print('CV score for class {} is {}'.format(data.classes[i], cv_score))
 
         # Calculate ROC_AUC
-        roc_auc(train_features, np.array(train_target))
+        roc_auc(train_features, np.array(train_target), data.classes[i])
 
         print ("Creating model for class "+data.classes[i])
         classifier.fit(train_features, train_target)
@@ -135,6 +135,7 @@ def predict_score():
     submission.to_csv('../data/output.csv', index=False)
     print ("Output saved")
 
+
 def predict_individual_score(comment):
     print ("Loading features")
     feature_pkl = open('../model/features.pkl', 'rb')
@@ -156,9 +157,9 @@ def predict_individual_score(comment):
     return prediction
 
 
-def roc_auc(X, Y):
+def roc_auc(X, Y, clas):
     classifier = LogisticRegression(solver='sag')
-    cv = StratifiedKFold(Y, n_folds=3)
+    cv = StratifiedKFold(Y, n_folds=5)
     mean_tpr = 0.0
     mean_fpr = np.linspace(0, 1, 100)
     all_tpr = []
@@ -171,7 +172,7 @@ def roc_auc(X, Y):
         mean_tpr += interp(mean_fpr, fpr, tpr)
         mean_tpr[0] = 0.0
         roc_auc = auc(fpr, tpr)
-        # plt.plot(fpr, tpr, lw=1, label='ROC fold %d (area = %0.2f)' % (i, roc_auc))
+        plt.plot(fpr, tpr, lw=1, label='ROC fold %d (area = %0.2f)' % (i, roc_auc))
 
     plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6))
 
@@ -184,8 +185,10 @@ def roc_auc(X, Y):
     plt.ylim([-0.05, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristics')
+    plt.title('Receiver operating characteristics - %s' %clas)
     plt.legend(loc="lower right")
-    plt.show()
+    # plt.show()
+    plt.savefig('testplot%s.png' %clas)
+    plt.close()
 
 

@@ -3,6 +3,8 @@ NLP  based project for toxic content filtering
 
 Dataset: https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data 
 
+Live Website: http://rashmio2410.pythonanywhere.com/
+
 Libraries required:
     pandas
     nltk
